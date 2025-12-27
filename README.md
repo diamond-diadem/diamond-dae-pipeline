@@ -17,3 +17,12 @@ torch==2.9.1
 h5py==3.15.1
 optuna==4.6.0
 ```
+
+## Installation
+
+Install the package and its dependencies using `pip3`:
+
+```bash
+pip install -r requirements.txt
+pip install -e .
+```
