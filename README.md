@@ -23,6 +23,6 @@ optuna==4.6.0
 Install the package and its dependencies using `pip3`:
 
 ```bash
-pip install -r requirements.txt
-pip install -e .
+pip3 install -r requirements.txt
+pip3 install -e .
 ```
