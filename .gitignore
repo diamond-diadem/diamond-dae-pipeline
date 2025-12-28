@@ -2,4 +2,5 @@ __pycache__/
 .ddae-venv/
 *.egg-info/
 
+*.h5
 *.npy
