@@ -26,3 +26,7 @@ Install the package and its dependencies using `pip3`:
 pip3 install -r requirements.txt
 pip3 install -e .
 ```
+
+## Preparing the Data
+
+Before running the preprocessing notebooks, ensure that the raw data is saved or converted into a `.npy` file. The training dataset should have the shape `(number of spatial points, number of repetitions per spatial point, number of spectral points)`. The final map to be denoised should have the shape `(number of spatial points, number of spectral points)`.
