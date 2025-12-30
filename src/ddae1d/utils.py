@@ -147,3 +147,31 @@ def compute_raman_shift(laser_wavelength, wavelengths):
     """
     wavelengths = np.asarray(wavelengths)
     return 1e7 * (1/laser_wavelength - 1/wavelengths)
+
+def baseline_correction(input_data, degree, axis=-1):
+    """
+    Perform baseline correction using polynomial fitting along a specified axis.
+
+    Parameters:
+        input_data (np.ndarray): Input spectra array of arbitrary shape.
+        degree (int): Degree of the polynomial for baseline fitting.
+        axis (int): Axis along which to perform baseline correction (default: -1).
+
+    Returns:
+        np.ndarray: Baseline-corrected spectra, same shape as input.
+    """
+    input_data = np.asarray(input_data, dtype=np.float64)
+    orig_shape = input_data.shape
+    L = orig_shape[axis]
+    x = np.linspace(-1, 1, L, dtype=np.float64)
+    X = np.vander(x, N=degree + 1, increasing=False).astype(np.float64)
+
+    # Move axis to last for easier reshaping
+    input_data_moved = np.moveaxis(input_data, axis, -1)
+    flat_shape = (-1, L)
+    Y = input_data_moved.reshape(flat_shape).T  # (L, Npix)
+    C, *_ = np.linalg.lstsq(X, Y, rcond=None)
+    fit = X @ C
+    corrected = (Y - fit).T.reshape(input_data_moved.shape)
+    # Move axis back to original position
+    return np.moveaxis(corrected, -1, axis)
