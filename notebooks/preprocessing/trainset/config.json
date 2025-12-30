@@ -1,3 +1,11 @@
 {
-    "raw_trainset_filename": "raw-trainset.npy"
+    "raw_trainset_filename": "raw-trainset.npy",
+    "trim_spectra": true,
+    "spectral_ends" : [48, -16],
+    "apply_savgol": true,
+    "savgol_params": {
+        "window_length": 111,
+        "polyorder": 3
+    },
+    "n_jobs_despike": -5
 }
