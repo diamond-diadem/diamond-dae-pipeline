@@ -1,0 +1,20 @@
+{
+    "raw_finalmap_filename": "raw-final-map.npy",
+    "trim_spectra": true,
+    "spectral_ends" : [48, -16],
+    "apply_savgol": true,
+    "savgol_params": {
+        "window_length": 111,
+        "polyorder": 3
+    },
+    "apply_despike": true,
+    "n_jobs_despike": -5,
+    "despike_params": {
+        "max_width": 3,
+        "local_window": 40,
+        "height_ratio": 5,
+        "max_iter": 5
+   },
+   "apply_baseline_correction": true,
+   "polyfit_degree": 4
+}
