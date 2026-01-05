@@ -1,0 +1,8 @@
+{
+    "kmeans_params": {
+        "n_clusters": 4,
+        "random_state": false,
+        "n_init": 50,
+        "max_iter": 500
+    }
+}
