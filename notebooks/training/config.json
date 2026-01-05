@@ -17,5 +17,6 @@
     "learning_rate": 0.0005,
     "verbose": 1,
     "device": "cuda"
-  }
+  },
+  "model_filename": "diamond-dae1d-noise2noise.model"
 }
