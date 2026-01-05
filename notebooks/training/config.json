@@ -1,0 +1,21 @@
+{ 
+  "model_params": {
+    "n_conv_blocks": 11,
+    "filters": [16, 24, 32, 48, 64],
+    "latent_dim": 96,
+    "kernel_size": 11,
+    "activations": "relu",
+    "output_activation": "linear",
+    "n_conv_per_block": 1,
+    "n_latent_layers": 1,
+    "use_batchnorm": false,
+    "dropout_rate": 0.0
+  },
+  "training_params": {
+    "batch_size": 128,
+    "epochs": 500,
+    "learning_rate": 0.0005,
+    "verbose": 1,
+    "device": "cuda"
+  }
+}
