@@ -413,7 +413,9 @@ class DiamondDAE1D(nn.Module):
         Improved Noise2Noise training method with optional clean-based metrics.
 
         Args:
-            x_noisy_list: Noisy realizations (n_realizations, n_samples, channels, length).
+            x_noisy_list: Noisy realizations shaped like train_classic inputs:
+                (n_samples, n_realizations, length) or
+                (n_samples, n_realizations, channels, length).
             batch_size (int): Batch size.
             epochs (int): Number of epochs.
             optimizer: PyTorch optimizer.
@@ -421,7 +423,7 @@ class DiamondDAE1D(nn.Module):
             loss_fn: Loss function.
             verbose (int): Verbosity.
             device: torch.device.
-            x_val_noisy_list: Validation noisy realizations.
+            x_val_noisy_list: Validation noisy realizations (same shape as x_noisy_list).
             x_clean_list: Optional clean realizations for training (same shape as x_noisy_list).
             x_val_clean_list: Optional clean realizations for validation
                 (same shape as x_val_noisy_list).
@@ -439,6 +441,29 @@ class DiamondDAE1D(nn.Module):
 
         loss_fn = loss_fn or torch.nn.MSELoss()
         optimizer = optimizer or torch.optim.Adam(self.parameters(), lr=learning_rate)
+
+        def _reshape_for_noise2noise(x, name):
+            if x is None:
+                return None
+            if torch.is_tensor(x):
+                x_arr = x.detach().cpu().numpy()
+            else:
+                x_arr = np.asarray(x)
+            if x_arr.ndim < 3:
+                raise ValueError(
+                    f"{name} must have at least 3 dims: "
+                    "(n_samples, n_realizations, length) or "
+                    "(n_samples, n_realizations, channels, length)."
+                )
+            x_arr = np.swapaxes(x_arr, 0, 1)
+            if x_arr.ndim == 3:
+                x_arr = x_arr[:, :, np.newaxis, :]
+            return x_arr
+
+        x_noisy_list = _reshape_for_noise2noise(x_noisy_list, "x_noisy_list")
+        x_val_noisy_list = _reshape_for_noise2noise(x_val_noisy_list, "x_val_noisy_list")
+        x_clean_list = _reshape_for_noise2noise(x_clean_list, "x_clean_list")
+        x_val_clean_list = _reshape_for_noise2noise(x_val_clean_list, "x_val_clean_list")
 
         # ---------------------------------------------------------------------
         # Main Noise2Noise training dataset (dynamic pairing, etc.)
