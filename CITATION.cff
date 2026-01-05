@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "DIAMOND Denoising Pipeline for 1D spectra"
+message: "If you use this software, please cite it using this metadata."
+type: software
+version: "0.5.0"
+authors:
+  - name: "David Martin-Calle"
+license: "MIT"
