@@ -318,13 +318,18 @@ class DiamondDAE1D(nn.Module):
         original_shape = None
         expects_unreshape = False
         had_channel_dim = None
+        squeeze_channel_dim = False
 
         if torch.is_tensor(x_input):
             x_array = x_input.detach().cpu().numpy()
         else:
             x_array = np.asarray(x_input)
 
-        if x_array.ndim == 3:
+        if x_array.ndim == 2:
+            # (n_samples, length)
+            squeeze_channel_dim = True
+            x_array = x_array[:, np.newaxis, :]
+        elif x_array.ndim == 3:
             # (n_samples, n_realizations, length)
             expects_unreshape = True
             original_shape = x_array.shape
@@ -362,6 +367,8 @@ class DiamondDAE1D(nn.Module):
             preds = np.swapaxes(preds, 0, 1)
             if not had_channel_dim:
                 preds = preds.squeeze(2)
+        elif squeeze_channel_dim:
+            preds = preds.squeeze(1)
         return preds
     
 
