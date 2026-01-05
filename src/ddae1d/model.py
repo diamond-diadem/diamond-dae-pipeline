@@ -315,9 +315,35 @@ class DiamondDAE1D(nn.Module):
         device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.to(device)
 
-        if isinstance(x_input, np.ndarray):
-            x_input = torch.tensor(x_input, dtype=self.dtype)
-        x_input = x_input.to(device)
+        original_shape = None
+        expects_unreshape = False
+        had_channel_dim = None
+
+        if torch.is_tensor(x_input):
+            x_array = x_input.detach().cpu().numpy()
+        else:
+            x_array = np.asarray(x_input)
+
+        if x_array.ndim == 3:
+            # (n_samples, n_realizations, length)
+            expects_unreshape = True
+            original_shape = x_array.shape
+            had_channel_dim = False
+            x_array = np.swapaxes(x_array, 0, 1)[:, :, np.newaxis, :]
+            x_array = x_array.reshape(-1, 1, x_array.shape[-1])
+        elif x_array.ndim == 4:
+            # (n_samples, n_realizations, channels, length)
+            expects_unreshape = True
+            original_shape = x_array.shape
+            had_channel_dim = True
+            x_array = np.swapaxes(x_array, 0, 1)
+            if x_array.shape[2] != 1:
+                raise ValueError(
+                    f"Expected channel dimension to be 1, got {x_array.shape[2]}"
+                )
+            x_array = x_array.reshape(-1, x_array.shape[2], x_array.shape[-1])
+
+        x_input = torch.tensor(x_array, dtype=self.dtype).to(device)
 
         dataset = TensorDataset(x_input)
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
@@ -329,7 +355,14 @@ class DiamondDAE1D(nn.Module):
                 preds = self(xb)
                 outputs.append(preds.cpu())
 
-        return torch.cat(outputs, dim=0).numpy()
+        preds = torch.cat(outputs, dim=0).numpy()
+        if expects_unreshape:
+            n_samples, n_realizations = original_shape[0], original_shape[1]
+            preds = preds.reshape(n_realizations, n_samples, preds.shape[1], preds.shape[2])
+            preds = np.swapaxes(preds, 0, 1)
+            if not had_channel_dim:
+                preds = preds.squeeze(2)
+        return preds
     
 
     def visualize_training(self, history):
