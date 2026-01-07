@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
 from scipy.interpolate import interp1d
+from scipy.optimize import linear_sum_assignment
 import torch
     
 
@@ -175,3 +176,48 @@ def baseline_correction(input_data, degree, axis=-1):
     corrected = (Y - fit).T.reshape(input_data_moved.shape)
     # Move axis back to original position
     return np.moveaxis(corrected, -1, axis)
+
+def match_cluster_labels(labels_ref, labels_to_match):
+    """
+    Matches cluster labels between two label arrays using the Hungarian algorithm.
+    Returns the permuted denoised labels with -1 preserved for invalid entries.
+    """
+    # Flatten the label arrays for comparison
+    labels_ref_flat = labels_ref.flatten()
+    labels_to_match_flat = labels_to_match.flatten()
+
+    # Only consider valid (non -1) labels for matching
+    valid_mask = (labels_ref_flat != -1) & (labels_to_match_flat != -1)
+    labels_ref_valid = labels_ref_flat[valid_mask]
+    labels_to_match_valid = labels_to_match_flat[valid_mask]
+
+    # Build the confusion matrix
+    num_labels = max(labels_ref_valid.max(), labels_to_match_valid.max()) + 1
+    confusion = np.zeros((num_labels, num_labels), dtype=np.int64)
+    for i in range(len(labels_ref_valid)):
+        confusion[labels_ref_valid[i], labels_to_match_valid[i]] += 1
+
+    # Find the best permutation using the Hungarian algorithm
+    row_ind, col_ind = linear_sum_assignment(-confusion)
+    label_permutation = np.zeros(num_labels, dtype=int)
+    label_permutation[col_ind] = row_ind
+
+    # Apply permutation to denoised labels, keeping -1 as -1
+    labels_matched = np.full_like(labels_to_match, -1)
+    mask_valid = labels_to_match != -1
+    labels_matched[mask_valid] = label_permutation[labels_to_match[mask_valid]]
+
+    return labels_matched
+
+def sort_cluster_labels_by_size(labels_2d):
+    """
+    Sort cluster labels in a 2D array by cluster size (descending), preserving -1 as background.
+    Returns the relabeled 2D array and the mapping used.
+    """
+    labels_flat = labels_2d.flatten()
+    unique, counts = np.unique(labels_flat[labels_flat != -1], return_counts=True)
+    sorted_labels = unique[np.argsort(-counts)]
+    label_map = {old: new for new, old in enumerate(sorted_labels)}
+    label_map[-1] = -1
+    relabeled = np.vectorize(lambda x: label_map.get(x, -1))(labels_2d)
+    return relabeled
