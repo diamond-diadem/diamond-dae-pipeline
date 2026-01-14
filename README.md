@@ -66,6 +66,28 @@ Run the notebooks in the order below. Each notebook reads its configuration from
 5. `notebooks/clustering/clustering.ipynb` (optional)
    - Use to explore or segment denoised spectra after the main pipeline.
 
+## Model Overview (src)
+
+The denoising model lives in `src/ddae1d/model.py` as `DiamondDAE1D`, a 1D convolutional denoising autoencoder designed for Noise2Noise training. It is built as:
+
+- **Encoder/decoder blocks:** `n_conv_blocks` total, split evenly between encoder and decoder. The encoder uses `Conv1d` layers followed by `MaxPool1d`; the decoder mirrors this with `ConvTranspose1d` and per-block strides.
+- **Filters list:** `filters` defines the encoder channel sizes. Its length must be `n_conv_blocks // 2`.
+- **Latent block:** if `n_conv_blocks` is odd, a latent stack is inserted with `latent_dim` and `n_latent_layers`.
+- **Activations:** `activations` is resolved from `torch.nn.functional` (e.g., `"relu"`). The output activation is selected by `output_activation` (`"linear"`, `"sigmoid"`, `"tanh"`, `"relu"`).
+- **Input shape:** training expects tensors shaped `(batch, 1, length)`. The `predict` helper accepts `(n_samples, length)` or `(n_samples, n_realizations, length)` and reshapes internally.
+
+Noise2Noise training uses `Noise2NoiseDataset`, which dynamically samples two different noisy realizations per spectrum for input/target pairing.
+
+## How to Configure the Model
+
+Model and training settings are configured in `notebooks/training/config.json`:
+
+- `model_params`: architectural choices (`n_conv_blocks`, `filters`, `kernel_size`, `latent_dim`, `n_conv_per_block`, `n_latent_layers`, `use_batchnorm`, `dropout_rate`, `activations`, `output_activation`).
+- `training_params`: runtime settings (`batch_size`, `epochs`, `learning_rate`, `device`, `verbose`).
+- `model_filename`: output filename saved under `models/`.
+
+When you change `model_filename`, update `notebooks/denoising/config.json` so the denoising notebook loads the same trained model. If you adjust `filters`, ensure it stays aligned with `n_conv_blocks // 2`, and keep `kernel_size` odd to match the model's validation checks.
+
 ## Configuration Notes
 
 - Update preprocessing parameters in `notebooks/preprocessing/*/config.json`.
