@@ -1,8 +1,78 @@
 cff-version: 1.2.0
-title: "DIAMOND Denoising Pipeline for 1D spectra"
-message: "If you use this software, please cite it using this metadata."
+message: "If you use this software, please cite it as below."
+
+title: "Noise2Noise Denoising Pipeline for High-Throughput Raman Spectroscopy"
 type: software
-version: "0.5.0"
+
+version: 1.0.0
+date-released: 2026-01-15
+
 authors:
-  - name: "David Martin-Calle"
-license: "MIT"
+  - family-names: Martin-Calle
+    given-names: David
+    affiliation: "Université Claude Bernard Lyon 1, CNRS, Institut Lumière Matière, France"
+    email: david.martin-calle@univ-lyon1.fr
+    orcid: https://orcid.org/0009-0008-8955-6705
+
+  - family-names: Alvarez-Llamas
+    given-names: Cesar
+    affiliation: "Université Claude Bernard Lyon 1, CNRS, Institut Lumière Matière, France"
+
+  - family-names: Motto-Ros
+    given-names: Vincent
+    affiliation: "Université Claude Bernard Lyon 1, CNRS, Institut Lumière Matière, France"
+
+  - family-names: Dujardin
+    given-names: Christophe
+    affiliation: "Université Claude Bernard Lyon 1, CNRS, Institut Lumière Matière, France"
+    affiliation: "Institut Universitaire de France (IUF), France"
+
+  - family-names: Margueritat
+    given-names: Jérémie
+    affiliation: "Université Claude Bernard Lyon 1, CNRS, Institut Lumière Matière, France"
+    email: jeremie.margueritat@univ-lyon1.fr
+
+  - family-names: Rodney
+    given-names: David
+    affiliation: "Université Claude Bernard Lyon 1, CNRS, Institut Lumière Matière, France"
+    email: david.rodney@univ-lyon1.fr
+
+contact:
+  - name: David Martin-Calle
+    email: david.martin-calle@univ-lyon1.fr
+
+repository-code: "https://github.com/diamond-diadem/diamond-dae-pipeline"
+url: "https://github.com/diamond-diadem/diamond-dae-pipeline"
+
+license: MIT
+keywords:
+  - Raman spectroscopy
+  - Noise2Noise
+  - Denoising autoencoder
+  - Self-supervised learning
+  - Hyperspectral imaging
+  - Deep learning
+  - Scientific software
+  - Research reproducibility
+
+abstract: >
+ A lightweight and reproducible denoising pipeline for high-throughput Raman spectroscopy is presented. The approach relies on a one-dimensional convolutional autoencoder trained using a Noise2Noise strategy, requiring neither external spectral libraries nor high signal-to-noise reference spectra. From a reduced training subset composed of repeated short-exposure acquisitions, the model learns to reconstruct Raman spectra while efficiently suppressing stochastic noise. The method is evaluated on a heterogeneous mineral sample, using both quantitative spectral fidelity metrics (RMSE, PSNR, SSIM) and task-oriented criteria based on unsupervised K-means classification. Results demonstrate that integration times as short as 5 ms per spectrum, which are typically insufficient for reliable interpretation, yield high spectral fidelity and chemically coherent maps after denoising. These results are comparable to those obtained from longer acquisitions and are sufficient for robust mineral phase separation. This work provides a practical trade-off between spectral quality and acquisition speed, enabling fast, adaptable Raman workflows compatible with routine laboratory use. It also offering a transferable framework for other one-dimensional spectroscopic modalities.
+
+preferred-citation:
+  type: article
+  title: "A Practical Noise2Noise Denoising Pipeline for High-Throughput Raman Spectroscopy"
+  authors:
+    - family-names: Martin-Calle
+      given-names: David
+    - family-names: Alvarez-Llamas
+      given-names: Cesar
+    - family-names: Motto-Ros
+      given-names: Vincent
+    - family-names: Dujardin
+      given-names: Christophe
+    - family-names: Margueritat
+      given-names: Jérémie
+    - family-names: Rodney
+      given-names: David
+  journal: "Advanced Engineering Materials"
+  year: 2026
