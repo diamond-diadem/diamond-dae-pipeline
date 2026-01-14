@@ -20,7 +20,14 @@ optuna==4.6.0
 
 ## Installation
 
-Install the package and its dependencies using `pip3`:
+First, create and activate a virtual environment:
+
+```bash
+python3 -m venv .ddae-venv
+source .ddae-venv/bin/activate  # On Windows use: .ddae-venv\Scripts\activate
+```
+
+Then install the package and its dependencies using `pip3`:
 
 ```bash
 pip3 install -r requirements.txt
