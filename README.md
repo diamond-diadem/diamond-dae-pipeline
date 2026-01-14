@@ -101,7 +101,29 @@ Model and training settings are configured in `notebooks/training/config.json`:
 - `training_params`: runtime settings (`batch_size`, `epochs`, `learning_rate`, `device`, `verbose`).
 - `model_filename`: output filename saved under `models/`.
 
-When you change `model_filename`, update `notebooks/denoising/config.json` so the denoising notebook loads the same trained model. If you adjust `filters`, ensure it stays aligned with `n_conv_blocks // 2`, and keep `kernel_size` odd to match the model's validation checks.
+### Model Parameters
+
+- `n_conv_blocks`: total encoder+decoder blocks; encoder and decoder each use `n_conv_blocks // 2`.
+- `filters`: list of encoder channels per block (length must equal `n_conv_blocks // 2`). The decoder mirrors this list in reverse.
+- `kernel_size`: convolution kernel width; must be odd and >= 1 to preserve alignment with padding.
+- `latent_dim`: channel size for the latent stack; defaults to the last `filters` value if omitted.
+- `n_conv_per_block`: number of `Conv1d` layers per encoder block before pooling (mirrored in the decoder).
+- `n_latent_layers`: number of `Conv1d` layers in the latent stack (only used when `n_conv_blocks` is odd).
+- `use_batchnorm`: toggles `BatchNorm1d` after each convolution.
+- `dropout_rate`: dropout probability applied after convolutions when > 0.
+- `activations`: name of the hidden activation function resolved from `torch.nn.functional` (e.g., `"relu"`).
+- `output_activation`: output nonlinearity (`"linear"`, `"sigmoid"`, `"tanh"`, `"relu"`).
+- `strides` (optional): per-encoder-block pooling stride(s). The model accepts an int or a list with length `n_conv_blocks // 2`, defaulting to `2` if not provided.
+
+### Training Parameters
+
+- `batch_size`: training batch size.
+- `epochs`: number of training epochs.
+- `learning_rate`: optimizer learning rate used by the training routine.
+- `device`: `"cuda"` or `"cpu"` (or a specific device string) to control where tensors are placed.
+- `verbose`: verbosity level for training logs.
+
+When you change `model_filename`, update `notebooks/denoising/config.json` so the denoising notebook loads the same trained model. If you adjust `filters`, ensure it stays aligned with `n_conv_blocks // 2`, and keep `kernel_size` odd to match the model's validation checks. If you add `strides`, ensure its length matches the encoder depth.
 
 ## Configuration Notes
 
