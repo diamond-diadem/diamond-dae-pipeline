@@ -2,6 +2,14 @@
 
 This repository contains the complete, reproducible implementation of the denoising pipeline presented in the article “A Practical Noise2Noise Denoising Pipeline for High-Throughput Raman Spectroscopy”.
 
+## How to Cite
+
+If you use this software, please cite the associated paper:
+
+"A Practical Noise2Noise Denoising Pipeline for High-Throughput Raman Spectroscopy", Advanced Engineering Materials (2026).
+
+For full citation metadata, see `CITATION.cff`.
+
 ## Requirements
 
 To run the denoising pipeline, install the main packages listed below. The `requirements.txt` file includes these packages and their dependencies:
@@ -100,11 +108,3 @@ When you change `model_filename`, update `notebooks/denoising/config.json` so th
 - Update preprocessing parameters in `notebooks/preprocessing/*/config.json`.
 - Adjust training hyperparameters and output model filename in `notebooks/training/config.json`.
 - Set the model filename used for denoising in `notebooks/denoising/config.json`.
-
-## How to Cite
-
-If you use this software, please cite the associated paper:
-
-"A Practical Noise2Noise Denoising Pipeline for High-Throughput Raman Spectroscopy", Advanced Engineering Materials (2026).
-
-For full citation metadata, see `CITATION.cff`.
