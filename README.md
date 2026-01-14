@@ -100,3 +100,11 @@ When you change `model_filename`, update `notebooks/denoising/config.json` so th
 - Update preprocessing parameters in `notebooks/preprocessing/*/config.json`.
 - Adjust training hyperparameters and output model filename in `notebooks/training/config.json`.
 - Set the model filename used for denoising in `notebooks/denoising/config.json`.
+
+## How to Cite
+
+If you use this software, please cite the associated paper:
+
+"A Practical Noise2Noise Denoising Pipeline for High-Throughput Raman Spectroscopy", Advanced Engineering Materials (2026).
+
+For full citation metadata, see `CITATION.cff`.
