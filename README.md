@@ -31,8 +31,8 @@ optuna==4.6.0
 First, create and activate a virtual environment:
 
 ```bash
-python3 -m venv .ddae-venv
-source .ddae-venv/bin/activate  # On Windows use: .ddae-venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows use: .ddae-venv\Scripts\activate
 ```
 
 Then install the package and its dependencies using `pip3`:
