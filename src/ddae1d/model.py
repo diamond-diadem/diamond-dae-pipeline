@@ -22,17 +22,37 @@ class Noise2NoiseDataset(Dataset):
 
     def __getitem__(self, idx):
         idx1, idx2 = np.random.choice(self.n_realizations, 2, replace=False)
-        input_sample = self.x_noisy[idx1, idx]   # (channels, length) ou (1, length)
+        input_sample = self.x_noisy[idx1, idx]
         target_sample = self.x_noisy[idx2, idx]
 
-        # Garantir que la dimension du canal est présente explicitement
         if input_sample.ndim == 1:
-            input_sample = input_sample.unsqueeze(0)  # (1, length)
+            input_sample = input_sample.unsqueeze(0)
         if target_sample.ndim == 1:
             target_sample = target_sample.unsqueeze(0)
 
         return input_sample, target_sample
 
+
+class NoisyToCleanDataset(Dataset):
+    """Dataset mapping noisy inputs to clean targets."""
+
+    def __init__(self, x_noisy, x_clean, dtype=torch.float32):
+        assert x_noisy.shape == x_clean.shape, "Noisy and clean arrays must have the same shape."
+        x_noisy_t = torch.as_tensor(x_noisy, dtype=dtype)
+        x_clean_t = torch.as_tensor(x_clean, dtype=dtype)
+        # (n_realizations, n_samples, channels, length) → flatten first two dims
+        if x_noisy_t.ndim >= 3:
+            self.x_noisy = x_noisy_t.reshape(-1, *x_noisy_t.shape[2:])
+            self.x_clean = x_clean_t.reshape(-1, *x_clean_t.shape[2:])
+        else:
+            self.x_noisy = x_noisy_t
+            self.x_clean = x_clean_t
+
+    def __len__(self):
+        return self.x_noisy.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x_noisy[idx], self.x_clean[idx]
 
 
 class DiamondDAE1D(nn.Module):
@@ -55,8 +75,7 @@ class DiamondDAE1D(nn.Module):
 
         if kernel_size < 1 or kernel_size % 2 == 0:
             raise ValueError("kernel_size must be odd and >= 1.")
-        
-                # Normalize strides: allow int or list[int]
+
         if isinstance(strides, int):
             strides = [strides] * (n_conv_blocks // 2)
 
@@ -96,18 +115,16 @@ class DiamondDAE1D(nn.Module):
             self.encoder_layers.append(nn.MaxPool1d(kernel_size=self.strides[block_idx]))
 
 
-        # Optional latent layer if odd number of layers
-        self.use_latent = n_conv_blocks % 2 != 0              
-        
-        # In __init__ inside the latent layer construction
+        self.use_latent = n_conv_blocks % 2 != 0
+
         if self.use_latent:
             for _ in range(self.n_latent_layers):
                 self.latent_layers.append(nn.Conv1d(in_channels, self.latent_dim, kernel_size, padding=self.kernel_size // 2))
-                if self.use_batchnorm:  # NEW
-                    self.latent_layers.append(nn.BatchNorm1d(self.latent_dim))  # NEW
-                if self.dropout_rate > 0.0:  # NEW
-                    self.latent_layers.append(nn.Dropout(self.dropout_rate))  # NEW
-                in_channels = self.latent_dim  # update channels
+                if self.use_batchnorm:
+                    self.latent_layers.append(nn.BatchNorm1d(self.latent_dim))
+                if self.dropout_rate > 0.0:
+                    self.latent_layers.append(nn.Dropout(self.dropout_rate))
+                in_channels = self.latent_dim
 
         decoder_strides = list(reversed(self.strides))
 
@@ -525,34 +542,6 @@ class DiamondDAE1D(nn.Module):
             val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
         # ---------------------------------------------------------------------
-        # Optional clean datasets: noisy -> clean mapping
-        # We assume shapes are compatible with x_noisy_list / x_val_noisy_list.
-        # ---------------------------------------------------------------------
-        from torch.utils.data import Dataset
-
-        class NoisyToCleanDataset(Dataset):
-            """Dataset mapping noisy inputs to clean targets."""
-
-            def __init__(self, x_noisy, x_clean, dtype=torch.float32):
-                assert x_noisy.shape == x_clean.shape, "Noisy and clean arrays must have the same shape."
-                x_noisy_t = torch.as_tensor(x_noisy, dtype=dtype)
-                x_clean_t = torch.as_tensor(x_clean, dtype=dtype)
-                # Flatten realizations and samples into a single batch dimension
-                # Assumes input shape: (n_realizations, n_samples, channels, length)
-                if x_noisy_t.ndim >= 3:
-                    self.x_noisy = x_noisy_t.reshape(-1, *x_noisy_t.shape[2:])
-                    self.x_clean = x_clean_t.reshape(-1, *x_clean_t.shape[2:])
-                else:
-                    # Fallback: just keep as is
-                    self.x_noisy = x_noisy_t
-                    self.x_clean = x_clean_t
-
-            def __len__(self):
-                return self.x_noisy.shape[0]
-
-            def __getitem__(self, idx):
-                return self.x_noisy[idx], self.x_clean[idx]
-
         train_clean_loader = None
         if x_clean_list is not None:
             train_clean_dataset = NoisyToCleanDataset(x_noisy_list, x_clean_list, dtype=dtype)
