@@ -20,7 +20,7 @@ def strip_notebook(path: Path) -> bool:
 
 def main() -> int:
     changed = []
-    for nb in Path("notebooks").rglob("*.ipynb"):
+    for nb in Path(".").rglob("*.ipynb"):
         if strip_notebook(nb):
             changed.append(nb)
     if changed:
