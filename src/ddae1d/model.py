@@ -411,7 +411,12 @@ class DiamondDAE1D(nn.Module):
                 "kernel_size": self.kernel_size,
                 "activations": self._activation_string,
                 "output_activation": self.output_activation,
-                "latent_dim": self.latent_dim
+                "latent_dim": self.latent_dim,
+                "n_conv_per_block": self.n_conv_per_block,
+                "n_latent_layers": self.n_latent_layers,
+                "use_batchnorm": self.use_batchnorm,
+                "dropout_rate": self.dropout_rate,
+                "strides": self.strides,
             }
         }
         torch.save(model_state, filepath)
