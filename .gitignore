@@ -1,6 +1,8 @@
 __pycache__/
 .ddae-venv/
+.venv/
 *.egg-info/
+uv.lock
 
 *.h5
 *.npy

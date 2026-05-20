@@ -1,4 +1,4 @@
-# DIAMOND Denoising Pipeline for 1D spectra 
+# DIAMOND Denoising Pipeline for 1D spectra
 
 This repository contains the complete, reproducible implementation of the denoising pipeline presented in the article “A Practical Noise2Noise Denoising Pipeline for High-Throughput Raman Spectroscopy”.
 
@@ -14,7 +14,7 @@ For full citation metadata, see `CITATION.cff`.
 
 To run the denoising pipeline, install the main packages listed below. The `requirements.txt` file includes these packages and their dependencies:
 
-```
+```text
 numpy==2.4.0
 pandas==2.3.3
 matplotlib==3.10.8
@@ -32,7 +32,7 @@ First, create and activate a virtual environment:
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate  # On Windows use: .ddae-venv\Scripts\activate
+source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 ```
 
 Then install the package and its dependencies using `pip3`:
@@ -54,7 +54,7 @@ git config core.hooksPath .githooks
 
 Before running the preprocessing notebooks, ensure that the raw data is saved or converted into a `.npy` file. The training dataset should have the shape `(number of spatial points, number of repetitions per spatial point, number of spectral points)`. The final map to be denoised should have the shape `(number of spatial points, number of spectral points)`.
 
-Data used in the associated study is available at https://doi.org/10.5281/zenodo.18244161. Place the downloaded files in `data/from-zenodo/` before running the preparation steps for the pipeline. (notebooks in `prepare-data-from-zenodo/`).
+Data used in the associated study is available at [doi.org/10.5281/zenodo.18244161](https://doi.org/10.5281/zenodo.18244161). Place the downloaded files in `data/from-zenodo/` before running the preparation steps for the pipeline. (notebooks in `prepare-data-from-zenodo/`).
 
 ## Repository Layout
 
@@ -62,25 +62,25 @@ Data used in the associated study is available at https://doi.org/10.5281/zenodo
 - `data/preprocessed/`: intermediate outputs from preprocessing.
 - `models/`: saved denoising models.
 - `data/results/denoised/`: denoised final map outputs.
-- `notebooks/`: end-to-end pipeline notebooks (preprocessing, training, denoising, clustering).
+- `notebooks-pipeline/`: end-to-end pipeline notebooks (preprocessing, training, denoising, clustering).
 
 ## Pipeline Workflow
 
 Run the notebooks in the order below. Each notebook reads its configuration from the adjacent `config.json`.
 
-1. `notebooks/preprocessing/trainset/trainset-preprocessing.ipynb`
+1. `notebooks-pipeline/preprocessing/trainset/trainset-preprocessing.ipynb`
    - Input: `data/raw/trainset/raw-trainset.npy`
    - Output: `data/preprocessed/trainset/noisy.npy`
-2. `notebooks/preprocessing/final-map/final-map-preprocessing.ipynb`
+2. `notebooks-pipeline/preprocessing/final-map/final-map-preprocessing.ipynb`
    - Input: `data/raw/final-map/raw-final-map.npy`
    - Output: `data/preprocessed/final-map/preprocessed-final-map.npy`
-3. `notebooks/training/training.ipynb`
+3. `notebooks-pipeline/training/training.ipynb`
    - Input: `data/preprocessed/trainset/noisy.npy`
    - Output: `models/diamond-dae1d-noise2noise.model`
-4. `notebooks/denoising/denoising-final-map.ipynb`
+4. `notebooks-pipeline/denoising/denoising-final-map.ipynb`
    - Inputs: `data/preprocessed/final-map/preprocessed-final-map.npy`, `models/diamond-dae1d-noise2noise.model`
    - Output: `data/results/denoised/denoised-final-map.npy`
-5. `notebooks/clustering/clustering.ipynb` (optional)
+5. `notebooks-pipeline/clustering/clustering.ipynb` (optional)
    - Use to explore or segment denoised spectra after the main pipeline.
 
 ## Model Overview (src)
@@ -97,7 +97,7 @@ Noise2Noise training uses `Noise2NoiseDataset`, which dynamically samples two di
 
 ## How to Configure the Model
 
-Model and training settings are configured in `notebooks/training/config.json`:
+Model and training settings are configured in `notebooks-pipeline/training/config.json`:
 
 - `model_params`: architectural choices (`n_conv_blocks`, `filters`, `kernel_size`, `latent_dim`, `n_conv_per_block`, `n_latent_layers`, `use_batchnorm`, `dropout_rate`, `activations`, `output_activation`).
 - `training_params`: runtime settings (`batch_size`, `epochs`, `learning_rate`, `device`, `verbose`).
@@ -125,10 +125,10 @@ Model and training settings are configured in `notebooks/training/config.json`:
 - `device`: `"cuda"` or `"cpu"` (or a specific device string) to control where tensors are placed.
 - `verbose`: verbosity level for training logs.
 
-When you change `model_filename`, update `notebooks/denoising/config.json` so the denoising notebook loads the same trained model. If you adjust `filters`, ensure it stays aligned with `n_conv_blocks // 2`, and keep `kernel_size` odd to match the model's validation checks. If you add `strides`, ensure its length matches the encoder depth.
+When you change `model_filename`, update `notebooks-pipeline/denoising/config.json` so the denoising notebook loads the same trained model. If you adjust `filters`, ensure it stays aligned with `n_conv_blocks // 2`, and keep `kernel_size` odd to match the model's validation checks. If you add `strides`, ensure its length matches the encoder depth.
 
 ## Configuration Notes
 
-- Update preprocessing parameters in `notebooks/preprocessing/*/config.json`.
-- Adjust training hyperparameters and output model filename in `notebooks/training/config.json`.
-- Set the model filename used for denoising in `notebooks/denoising/config.json`.
+- Update preprocessing parameters in `notebooks-pipeline/preprocessing/*/config.json`.
+- Adjust training hyperparameters and output model filename in `notebooks-pipeline/training/config.json`.
+- Set the model filename used for denoising in `notebooks-pipeline/denoising/config.json`.
