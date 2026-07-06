@@ -167,6 +167,11 @@ class DiamondDAE1D(nn.Module):
         )
 
     def _resolve_activation(self, name):
+        # Only used for hidden-layer `activations`. `output_activation` is
+        # intentionally NOT resolved through this method: it is restricted to
+        # the fixed set of names hardcoded in `act_map` (see `forward`), unlike
+        # `activations` which accepts any callable or any name exposed by
+        # `torch.nn.functional`/`torch`.
         if callable(name):
             return name
         if isinstance(name, str):
@@ -213,6 +218,10 @@ class DiamondDAE1D(nn.Module):
                 x = self.activation_fn(x)
 
         # Output layer
+        # Deliberately a fixed lookup, unlike `self.activation_fn` (hidden
+        # layers): `output_activation` only ever supports these 4 names, it
+        # is not resolved via `_resolve_activation` and does not accept an
+        # arbitrary callable or `torch`/`torch.nn.functional` name.
         act_map = {
             "linear": lambda x: x,
             "sigmoid": torch.sigmoid,

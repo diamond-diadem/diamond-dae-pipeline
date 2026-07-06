@@ -90,7 +90,7 @@ The denoising model lives in `src/ddae1d/model.py` as `DiamondDAE1D`, a 1D convo
 - **Encoder/decoder blocks:** `n_conv_blocks` total, split evenly between encoder and decoder. The encoder uses `Conv1d` layers followed by `MaxPool1d`; the decoder mirrors this with `ConvTranspose1d` and per-block strides.
 - **Filters list:** `filters` defines the encoder channel sizes. Its length must be `n_conv_blocks // 2`.
 - **Latent block:** if `n_conv_blocks` is odd, a latent stack is inserted with `latent_dim` and `n_latent_layers`.
-- **Activations:** `activations` is resolved from `torch.nn.functional` (e.g., `"relu"`). The output activation is selected by `output_activation` (`"linear"`, `"sigmoid"`, `"tanh"`, `"relu"`).
+- **Activations:** `activations` (hidden layers) accepts any callable, or any name resolved dynamically from `torch.nn.functional` then `torch` (e.g., `"relu"`). `output_activation` is resolved differently and more narrowly: it is limited to a fixed, hardcoded set of 4 names (`"linear"`, `"sigmoid"`, `"tanh"`, `"relu"`) and does not accept a callable or any other `torch`/`torch.nn.functional` name.
 - **Input shape:** training expects tensors shaped `(batch, 1, length)`. The `predict` helper accepts `(n_samples, length)` or `(n_samples, n_realizations, length)` and reshapes internally.
 
 Noise2Noise training uses `Noise2NoiseDataset`, which dynamically samples two different noisy realizations per spectrum for input/target pairing.
@@ -113,8 +113,8 @@ Model and training settings are configured in `notebooks-pipeline/training/confi
 - `n_latent_layers`: number of `Conv1d` layers in the latent stack (only used when `n_conv_blocks` is odd).
 - `use_batchnorm`: toggles `BatchNorm1d` after each convolution.
 - `dropout_rate`: dropout probability applied after convolutions when > 0.
-- `activations`: name of the hidden activation function resolved from `torch.nn.functional` (e.g., `"relu"`).
-- `output_activation`: output nonlinearity (`"linear"`, `"sigmoid"`, `"tanh"`, `"relu"`).
+- `activations`: hidden-layer activation; any callable, or any name resolved from `torch.nn.functional` then `torch` (e.g., `"relu"`).
+- `output_activation`: output nonlinearity; restricted to exactly `"linear"`, `"sigmoid"`, `"tanh"`, or `"relu"` — unlike `activations`, this is not resolved dynamically and any other value raises a `ValueError`.
 - `strides` (optional): per-encoder-block pooling stride(s). The model accepts an int or a list with length `n_conv_blocks // 2`, defaulting to `2` if not provided.
 
 ### Training Parameters
