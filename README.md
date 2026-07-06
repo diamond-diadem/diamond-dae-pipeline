@@ -12,35 +12,16 @@ For full citation metadata, see `CITATION.cff`.
 
 ## Requirements
 
-To run the denoising pipeline, install the main packages listed below. The `requirements.txt` file includes these packages and their dependencies:
-
-```text
-numpy==2.4.0
-pandas==2.3.3
-matplotlib==3.10.8
-ipykernel==7.1.0
-scipy==1.16.3
-scikit-learn==1.8.0
-joblib==1.5.3
-torch==2.9.1
-h5py==3.15.1
-optuna==4.6.0
-```
+This pipeline requires Python >=3.13. Direct dependencies are declared in `pyproject.toml`; exact versions of the full dependency tree are pinned in `uv.lock` for reproducible installs.
 
 ## Installation
 
-First, create and activate a virtual environment:
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management and reproducible installs.
+
+From the repository root, create the environment and install the exact locked dependency versions:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
-```
-
-Then install the package and its dependencies using `pip3`:
-
-```bash
-pip3 install -r requirements.txt
-pip3 install -e .
+uv sync
 ```
 
 ## Developer Notes
