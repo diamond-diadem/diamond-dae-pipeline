@@ -2,6 +2,10 @@
 import json
 from pathlib import Path
 
+# Scoped to the tracked pipeline directories so this never touches notebooks
+# outside the repo's own tree (e.g. ones shipped inside a local .venv).
+NOTEBOOK_DIRS = ["notebooks-pipeline", "prepare-data-from-zenodo"]
+
 
 def strip_notebook(path: Path) -> bool:
     data = json.loads(path.read_text())
@@ -20,9 +24,10 @@ def strip_notebook(path: Path) -> bool:
 
 def main() -> int:
     changed = []
-    for nb in Path(".").rglob("*.ipynb"):
-        if strip_notebook(nb):
-            changed.append(nb)
+    for notebook_dir in NOTEBOOK_DIRS:
+        for nb in Path(notebook_dir).rglob("*.ipynb"):
+            if strip_notebook(nb):
+                changed.append(nb)
     if changed:
         print("Stripped outputs from:")
         for nb in changed:
