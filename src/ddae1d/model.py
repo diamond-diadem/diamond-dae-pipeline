@@ -99,6 +99,7 @@ class DiamondDAE1D(nn.Module):
         self.output_activation = output_activation
         self.latent_dim = latent_dim or filters[-1]
         self.strides = strides
+        self.total_stride = int(np.prod(self.strides))
 
         # Store the original string for serialization
         self._activation_string = activations
@@ -196,6 +197,15 @@ class DiamondDAE1D(nn.Module):
         if x.ndim != 3 or x.shape[1] != 1:
             raise ValueError(
                 f"Expected input of shape (batch_size, 1, length), got {x.shape}"
+            )
+
+        if x.shape[-1] % self.total_stride != 0:
+            raise ValueError(
+                f"Input length {x.shape[-1]} is not divisible by the total "
+                f"encoder stride {self.total_stride} (product of `strides`="
+                f"{self.strides}). The decoder cannot exactly reconstruct a "
+                "length that doesn't divide evenly; trim/pad the spectra or "
+                "adjust `strides` accordingly."
             )
 
         # Encoder
