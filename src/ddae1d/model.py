@@ -260,14 +260,14 @@ class DiamondDAE1D(nn.Module):
             loss_fn = torch.nn.MSELoss()
 
         # Training data loader
-        train_dataset = TensorDataset(torch.tensor(x_train, dtype=self.dtype),
-                                    torch.tensor(y_train, dtype=self.dtype))
+        train_dataset = TensorDataset(torch.as_tensor(x_train, dtype=self.dtype),
+                                    torch.as_tensor(y_train, dtype=self.dtype))
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
         # Validation data loader (if any)
         if x_val is not None and y_val is not None:
-            val_dataset = TensorDataset(torch.tensor(x_val, dtype=self.dtype),
-                                        torch.tensor(y_val, dtype=self.dtype))
+            val_dataset = TensorDataset(torch.as_tensor(x_val, dtype=self.dtype),
+                                        torch.as_tensor(y_val, dtype=self.dtype))
             val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
         else:
             val_loader = None
@@ -321,8 +321,8 @@ class DiamondDAE1D(nn.Module):
         if loss_fn is None:
             loss_fn = torch.nn.MSELoss()
 
-        test_dataset = TensorDataset(torch.tensor(x_test, dtype=self.dtype),
-                                    torch.tensor(y_test, dtype=self.dtype))
+        test_dataset = TensorDataset(torch.as_tensor(x_test, dtype=self.dtype),
+                                    torch.as_tensor(y_test, dtype=self.dtype))
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
         total_loss = 0.0
