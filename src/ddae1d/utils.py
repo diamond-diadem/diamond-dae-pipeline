@@ -212,7 +212,7 @@ def match_cluster_labels(labels_ref, labels_to_match):
 def sort_cluster_labels_by_size(labels_2d):
     """
     Sort cluster labels in a 2D array by cluster size (descending), preserving -1 as background.
-    Returns the relabeled 2D array and the mapping used.
+    Returns the relabeled 2D array.
     """
     labels_flat = labels_2d.flatten()
     unique, counts = np.unique(labels_flat[labels_flat != -1], return_counts=True)
