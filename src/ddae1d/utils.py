@@ -18,7 +18,7 @@ def despike(spectrum, max_width=5, local_window=20, height_ratio=4):
     local_window : int, optional
         Number of points to use on each side of a peak to estimate local noise statistics (default: 20).
     height_ratio : float, optional
-        Minimum ratio of peak height to local standard deviation to consider a spike (default: 5).
+        Minimum ratio of peak height to local standard deviation to consider a spike (default: 4).
 
     Returns
     -------
