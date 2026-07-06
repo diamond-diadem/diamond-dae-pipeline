@@ -85,6 +85,14 @@ class DiamondDAE1D(nn.Module):
                 f"but got {len(strides)}. `strides` must match encoder blocks."
             )
 
+        self.use_latent = n_conv_blocks % 2 != 0
+        if not self.use_latent and n_latent_layers != 1:
+            raise ValueError(
+                "`n_latent_layers` has no effect because `n_conv_blocks` is even, "
+                "so no latent block is built. Use an odd `n_conv_blocks` to enable "
+                "the latent stack."
+            )
+
         self.n_conv_blocks = n_conv_blocks
         self.filters = filters
         self.kernel_size = kernel_size
@@ -113,9 +121,6 @@ class DiamondDAE1D(nn.Module):
                 in_channels = f  # update in_channels after each conv
             # pooling after block, with per-block stride
             self.encoder_layers.append(nn.MaxPool1d(kernel_size=self.strides[block_idx]))
-
-
-        self.use_latent = n_conv_blocks % 2 != 0
 
         if self.use_latent:
             for _ in range(self.n_latent_layers):
