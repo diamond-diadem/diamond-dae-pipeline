@@ -3,4 +3,7 @@ set -euo pipefail
 
 python3 scripts/strip_notebooks.py >/dev/null
 
-git add $(find notebooks-pipeline prepare-data-from-zenodo -name "*.ipynb" 2>/dev/null) 2>/dev/null || true
+mapfile -t staged_notebooks < <(git diff --cached --name-only --diff-filter=d -- '*.ipynb')
+if [ "${#staged_notebooks[@]}" -gt 0 ]; then
+    git add -- "${staged_notebooks[@]}"
+fi
