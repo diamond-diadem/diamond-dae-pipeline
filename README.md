@@ -26,10 +26,10 @@ uv sync
 
 ## Developer Notes
 
-To keep notebooks clean for public commits, enable the repo hook once:
+Notebook outputs, execution counts, and kernel metadata are stripped from `notebooks-pipeline/` and `prepare-data-from-zenodo/` via a git clean filter, so running a notebook never shows up as a change. Enable it once per clone:
 
 ```bash
-git config core.hooksPath .githooks
+git config filter.stripnotebook.clean "python3 scripts/strip_notebooks.py"
 ```
 
 ## Preparing the Data

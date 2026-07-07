@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-python3 scripts/strip_notebooks.py >/dev/null
-
-mapfile -t staged_notebooks < <(git diff --cached --name-only --diff-filter=d -- '*.ipynb')
-if [ "${#staged_notebooks[@]}" -gt 0 ]; then
-    git add -- "${staged_notebooks[@]}"
-fi

@@ -1,37 +1,25 @@
 #!/usr/bin/env python3
+"""Git clean filter: strips execution artifacts from a notebook piped on stdin."""
 import json
-from pathlib import Path
-
-# Scoped to the tracked pipeline directories so this never touches notebooks
-# outside the repo's own tree (e.g. ones shipped inside a local .venv).
-NOTEBOOK_DIRS = ["notebooks-pipeline", "prepare-data-from-zenodo"]
+import sys
 
 
-def strip_notebook(path: Path) -> bool:
-    data = json.loads(path.read_text())
-    dirty = False
+def strip_notebook(data: dict) -> None:
     for cell in data.get("cells", []):
         if cell.get("outputs"):
             cell["outputs"] = []
-            dirty = True
         if cell.get("execution_count") is not None:
             cell["execution_count"] = None
-            dirty = True
-    if dirty:
-        path.write_text(json.dumps(data, indent=1, ensure_ascii=True) + "\n")
-    return dirty
+    metadata = data.get("metadata", {})
+    metadata.get("kernelspec", {}).pop("display_name", None)
+    metadata.get("language_info", {}).pop("version", None)
 
 
 def main() -> int:
-    changed = []
-    for notebook_dir in NOTEBOOK_DIRS:
-        for nb in Path(notebook_dir).rglob("*.ipynb"):
-            if strip_notebook(nb):
-                changed.append(nb)
-    if changed:
-        print("Stripped outputs from:")
-        for nb in changed:
-            print(f"  {nb}")
+    data = json.load(sys.stdin)
+    strip_notebook(data)
+    json.dump(data, sys.stdout, indent=1, ensure_ascii=True)
+    sys.stdout.write("\n")
     return 0
 
 
