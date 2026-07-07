@@ -10,9 +10,11 @@ def strip_notebook(data: dict) -> None:
             cell["outputs"] = []
         if cell.get("execution_count") is not None:
             cell["execution_count"] = None
+        cell.get("metadata", {}).pop("execution", None)
     metadata = data.get("metadata", {})
     metadata.get("kernelspec", {}).pop("display_name", None)
     metadata.get("language_info", {}).pop("version", None)
+    metadata.pop("widgets", None)
 
 
 def main() -> int:
