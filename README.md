@@ -30,6 +30,7 @@ Notebook outputs, execution counts, and kernel metadata are stripped from `noteb
 
 ```bash
 git config filter.stripnotebook.clean "python3 scripts/strip_notebooks.py"
+git config filter.stripnotebook.required true
 ```
 
 ## Preparing the Data
