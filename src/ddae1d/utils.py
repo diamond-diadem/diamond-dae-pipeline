@@ -149,6 +149,36 @@ def compute_raman_shift(laser_wavelength, wavelengths):
     wavelengths = np.asarray(wavelengths)
     return 1e7 * (1/laser_wavelength - 1/wavelengths)
 
+def percentile_offset(spectra, percentile=1.0):
+    """Estimate a per-channel offset profile as a low percentile across spatial points.
+
+    For each spectral channel, the offset is the `percentile`-th percentile of the
+    intensities over all spatial points.
+
+    Parameters
+    ----------
+    spectra : array_like
+        Either (n_points, n_channels) single acquisitions, or
+        (n_points, n_reps, n_channels) repeated acquisitions, in which case all
+        repetitions are pooled with the spatial points, so that the offset carries
+        the same noise bias as for single acquisitions.
+    percentile : float
+        Percentile in [0, 100] taken across spatial points (default: 1.0).
+
+    Returns
+    -------
+    numpy.ndarray
+        Offset profile of shape (n_channels,), to be subtracted from every spectrum.
+    """
+    spectra = np.asarray(spectra)
+    if spectra.ndim == 3:
+        spectra = spectra.reshape(-1, spectra.shape[-1])
+    elif spectra.ndim != 2:
+        raise ValueError(
+            f"spectra must have shape (n_points, n_channels) or (n_points, n_reps, n_channels), got {spectra.shape}"
+        )
+    return np.nanpercentile(spectra, percentile, axis=0)
+
 def baseline_correction(input_data, degree, axis=-1):
     """
     Perform baseline correction using polynomial fitting along a specified axis.

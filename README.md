@@ -115,3 +115,4 @@ When you change `model_filename`, update `notebooks-pipeline/denoising/config.js
 - Update preprocessing parameters in `notebooks-pipeline/preprocessing/*/config.json`.
 - Adjust training hyperparameters and output model filename in `notebooks-pipeline/training/config.json`.
 - Set the model filename used for denoising in `notebooks-pipeline/denoising/config.json`.
+- The offset profile (`apply_offset`) is a low per-channel percentile across all spectra, so it assumes at least `offset_percentile` % of the spectra are free of Raman signal on every channel. A band present almost everywhere would end up in the offset and be subtracted from every spectrum: check the offset profile plot for peaks.
