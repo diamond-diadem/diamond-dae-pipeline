@@ -1,2 +1,1 @@
-notebooks-pipeline/**/*.ipynb filter=stripnotebook
-prepare-data-from-zenodo/**/*.ipynb filter=stripnotebook
+*.ipynb filter=stripnotebook

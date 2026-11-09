@@ -26,10 +26,11 @@ uv sync
 
 ## Developer Notes
 
-Notebook outputs, execution counts, and kernel metadata are stripped from `notebooks-pipeline/` and `prepare-data-from-zenodo/` via a git clean filter, so running a notebook never shows up as a change. Enable it once per clone:
+Every `.ipynb` file in the repository goes through a git clean filter ([scripts/strip_notebooks.py](scripts/strip_notebooks.py)) that keeps only cell sources, attachments and tags: outputs, execution counts, cell ids, cell and notebook metadata (kernel, interpreter, widgets, editor-specific keys) are dropped or normalized. Running a notebook in Jupyter, JupyterLab, VS Code or any other editor therefore never shows up as a change. Enable it once per clone:
 
 ```bash
 git config filter.stripnotebook.clean "python3 scripts/strip_notebooks.py"
+git config filter.stripnotebook.smudge cat
 git config filter.stripnotebook.required true
 ```
 
