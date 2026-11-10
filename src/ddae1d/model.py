@@ -167,6 +167,9 @@ class DiamondDAE1D(nn.Module):
             padding=self.kernel_size // 2
         )
 
+        # Layers are created in float32: cast them to the requested dtype
+        self.to(self.dtype)
+
     def _resolve_activation(self, name):
         # Only used for hidden-layer `activations`. `output_activation` is
         # intentionally NOT resolved through this method: it is restricted to
@@ -459,6 +462,7 @@ class DiamondDAE1D(nn.Module):
                 "use_batchnorm": self.use_batchnorm,
                 "dropout_rate": self.dropout_rate,
                 "strides": self.strides,
+                "dtype": self.dtype,
             }
         }
         torch.save(model_state, filepath)
@@ -524,7 +528,7 @@ class DiamondDAE1D(nn.Module):
         """
         device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.to(device)
-        dtype = torch.float32
+        dtype = self.dtype
 
         loss_fn = loss_fn or torch.nn.MSELoss()
         optimizer = optimizer or torch.optim.Adam(self.parameters(), lr=learning_rate)

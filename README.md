@@ -95,8 +95,8 @@ Model and training settings are configured in `notebooks-pipeline/training/confi
 - `latent_dim`: channel size for the latent stack; defaults to the last `filters` value if omitted.
 - `n_conv_per_block`: number of `Conv1d` layers per encoder block before pooling (mirrored in the decoder).
 - `n_latent_layers`: number of `Conv1d` layers in the latent stack (only used when `n_conv_blocks` is odd).
-- `use_batchnorm`: toggles `BatchNorm1d` after each convolution.
-- `dropout_rate`: dropout probability applied after convolutions when > 0.
+- `use_batchnorm`: toggles `BatchNorm1d` after each encoder and latent convolution (applied after the activation); the decoder has none.
+- `dropout_rate`: dropout probability applied after each encoder and latent convolution when > 0; the decoder has none.
 - `activations`: hidden-layer activation; any callable, or any name resolved from `torch.nn.functional` then `torch` (e.g., `"relu"`).
 - `output_activation`: output nonlinearity; restricted to exactly `"linear"`, `"sigmoid"`, `"tanh"`, or `"relu"` — unlike `activations`, this is not resolved dynamically and any other value raises a `ValueError`.
 - `strides` (optional): per-encoder-block pooling stride(s). The model accepts an int or a list with length `n_conv_blocks // 2`, defaulting to `2` if not provided.

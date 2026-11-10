@@ -33,8 +33,9 @@ def despike(spectrum, max_width=5, local_window=20, height_ratio=4):
     # Measure the width of each peak at half maximum
     results_half = peak_widths(spectrum, peaks, rel_height=0.5)
     widths = results_half[0]
-    left_ips = results_half[2].astype(int)
-    right_ips = results_half[3].astype(int)
+    # Round outwards on both sides so the spike region is symmetric around the peak
+    left_ips = np.floor(results_half[2]).astype(int)
+    right_ips = np.ceil(results_half[3]).astype(int)
     selected_peaks = []
     left_bounds = []
     right_bounds = []
