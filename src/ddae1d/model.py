@@ -389,7 +389,8 @@ class DiamondDAE1D(nn.Module):
                 )
             x_array = x_array.reshape(-1, x_array.shape[2], x_array.shape[-1])
 
-        x_input = torch.tensor(x_array, dtype=self.dtype).to(device)
+        # Keep the full dataset on CPU: only one batch at a time is moved to `device`
+        x_input = torch.tensor(x_array, dtype=self.dtype)
 
         dataset = TensorDataset(x_input)
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
