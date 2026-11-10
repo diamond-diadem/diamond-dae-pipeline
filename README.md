@@ -106,7 +106,7 @@ Model and training settings are configured in `notebooks-pipeline/training/confi
 - `batch_size`: training batch size.
 - `epochs`: number of training epochs.
 - `learning_rate`: optimizer learning rate used by the training routine.
-- `device`: `"cuda"` or `"cpu"` (or a specific device string) to control where tensors are placed.
+- `device`: `null` (default) uses CUDA when available and falls back to CPU otherwise; set `"cuda"`, `"cpu"` or a specific device string (e.g. `"cuda:1"`) to force one.
 - `verbose`: verbosity level for training logs.
 
 When you change `model_filename`, update `notebooks-pipeline/denoising/config.json` so the denoising notebook loads the same trained model. If you adjust `filters`, ensure it stays aligned with `n_conv_blocks // 2`, and keep `kernel_size` odd to match the model's validation checks. If you add `strides`, ensure its length matches the encoder depth.
