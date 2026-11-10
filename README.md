@@ -36,7 +36,7 @@ git config filter.stripnotebook.required true
 
 ## Preparing the Data
 
-Before running the preprocessing notebooks, ensure that the raw data is saved or converted into a `.npy` file. The training dataset should have the shape `(number of spatial points, number of repetitions per spatial point, number of spectral points)`. The final map to be denoised should have the shape `(number of spatial points, number of spectral points)`.
+Before running the preprocessing notebooks, ensure that the raw data is saved or converted into a `.npy` file. The training dataset should have the shape `(number of spatial points, number of repetitions per spatial point, number of spectral points)`. The final map to be denoised should have the shape `(number of points along x, number of points along y, number of spectral points)`.
 
 Data used in the associated study is available at [doi.org/10.5281/zenodo.18244161](https://doi.org/10.5281/zenodo.18244161). Place the downloaded files in `data/from-zenodo/` before running the preparation steps for the pipeline. (notebooks in `prepare-data-from-zenodo/`).
 
